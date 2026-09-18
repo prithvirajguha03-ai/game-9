@@ -1,11 +1,67 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tetris</title>
+  <link href="./output.css" rel="stylesheet">
+  <script src="./src/tetris.js" defer></script>
 </head>
-<body>
-    
+<body class="bg-slate-950 text-slate-100 min-h-screen overflow-x-hidden flex justify-center items-center px-3 py-6">
+  <main class="flex flex-col items-center gap-4 w-full max-w-fit">
+    <h1 class="text-3xl sm:text-4xl font-extrabold tracking-[0.3em] text-cyan-300 drop-shadow-[0_0_18px_rgba(34,211,238,0.4)] pl-[0.3em]">
+      TETRIS
+    </h1>
+
+    <div id="game-area" class="flex flex-col md:flex-row items-center justify-center gap-4">
+      <div class="board-wrap">
+        <div id="board" class="board" aria-label="Tetris board"></div>
+        <div id="overlay" class="overlay hidden">
+          <p id="overlay-title" class="overlay-title"></p>
+          <button id="overlay-restart" class="overlay-btn hidden" type="button">Play Again</button>
+        </div>
+      </div>
+
+      <aside class="panel">
+        <div class="stat">
+          <p class="stat-label">Next</p>
+          <div id="next-preview" class="next-grid" aria-label="Next piece preview"></div>
+        </div>
+        <div class="stat">
+          <p class="stat-label">Score</p>
+          <p id="score" class="stat-value">0</p>
+        </div>
+        <div class="stat">
+          <p class="stat-label">Lines</p>
+          <p id="lines" class="stat-value">0</p>
+        </div>
+        <div class="stat">
+          <p class="stat-label">Level</p>
+          <p id="level" class="stat-value">1</p>
+        </div>
+        <div class="flex flex-row md:flex-col gap-2">
+          <button id="pause-btn" class="btn" type="button">Pause</button>
+          <button id="restart-btn" class="btn btn-accent" type="button">Restart</button>
+        </div>
+      </aside>
+    </div>
+
+    <div class="touch-controls" aria-label="Touch controls">
+      <div class="touch-row">
+        <button class="touch-btn" data-action="move-left" type="button" aria-label="Move left">&#9664;</button>
+        <button class="touch-btn touch-btn-wide" data-action="move-down" type="button" aria-label="Move down">&#9660;</button>
+        <button class="touch-btn" data-action="move-right" type="button" aria-label="Move right">&#9654;</button>
+      </div>
+      <div class="touch-row">
+        <button class="touch-btn" data-action="rotate" type="button" aria-label="Rotate">&#10227;</button>
+        <button class="touch-btn touch-btn-wide" data-action="hard-drop" type="button" aria-label="Hard drop">&#8650;</button>
+      </div>
+    </div>
+
+    <p class="text-slate-500 text-xs text-center leading-relaxed">
+      <span class="hidden sm:inline">&#8592; &#8594; move &nbsp;&middot;&nbsp; &#8595; soft drop &nbsp;&middot;&nbsp; &#8593; rotate &nbsp;&middot;&nbsp; Space hard drop &nbsp;&middot;&nbsp; P pause &nbsp;&middot;&nbsp; R restart</span>
+      <span class="sm:hidden">Use the on-screen buttons to control the piece</span>
+    </p>
+  </main>
 </body>
 </html>
