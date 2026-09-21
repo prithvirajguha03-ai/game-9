@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Tetris</title>
   <link href="./output.css" rel="stylesheet">
+  <script src="./src/difficulty.js" defer></script>
   <script src="./src/tetris.js" defer></script>
 </head>
 <body class="bg-slate-100 text-slate-900 min-h-screen overflow-x-hidden flex justify-center items-center px-3 py-6">
@@ -13,40 +14,77 @@
       TETRIS
     </h1>
 
-    <div id="game-area" class="flex flex-col md:flex-row items-center justify-center gap-4">
-      <div class="board-wrap">
-        <div id="board" class="board" aria-label="Tetris board"></div>
-        <div id="overlay" class="overlay hidden">
-          <p id="overlay-title" class="overlay-title"></p>
-          <button id="overlay-restart" class="overlay-btn hidden" type="button">Play Again</button>
-        </div>
+    <section id="difficulty-screen" class="difficulty-screen" aria-labelledby="difficulty-heading">
+      <h2 id="difficulty-heading" class="difficulty-heading">Choose Your Difficulty</h2>
+      <p class="difficulty-intro">Select how challenging today's game should be.</p>
+
+      <div class="difficulty-options" role="radiogroup" aria-label="Choose a difficulty">
+        <button type="button" class="difficulty-option" data-difficulty-option="easy" role="radio"
+                aria-checked="false" aria-label="Easy — relaxed pace and slower pieces" tabindex="0">
+          <span class="difficulty-option-name" data-difficulty-name>Easy</span>
+          <span class="difficulty-option-tagline" data-difficulty-tagline>Relaxed pace, pieces fall slowly</span>
+          <span class="difficulty-option-check" aria-hidden="true">&check;</span>
+        </button>
+        <button type="button" class="difficulty-option" data-difficulty-option="normal" role="radio"
+                aria-checked="false" aria-label="Normal — balanced challenge" tabindex="-1">
+          <span class="difficulty-option-name" data-difficulty-name>Normal</span>
+          <span class="difficulty-option-tagline" data-difficulty-tagline>Balanced challenge</span>
+          <span class="difficulty-option-check" aria-hidden="true">&check;</span>
+        </button>
+        <button type="button" class="difficulty-option" data-difficulty-option="hard" role="radio"
+                aria-checked="false" aria-label="Hard — faster pieces and quicker levels" tabindex="-1">
+          <span class="difficulty-option-name" data-difficulty-name>Hard</span>
+          <span class="difficulty-option-tagline" data-difficulty-tagline>Faster pieces, levels come quicker</span>
+          <span class="difficulty-option-check" aria-hidden="true">&check;</span>
+        </button>
       </div>
 
-      <aside class="panel">
-        <div class="stat">
-          <p class="stat-label">Next</p>
-          <div id="next-preview" class="next-grid" aria-label="Next piece preview"></div>
+      <div class="difficulty-actions">
+        <button type="button" class="difficulty-start" data-difficulty-start disabled>Start Game</button>
+        <button type="button" class="difficulty-back" data-difficulty-back>Back</button>
+      </div>
+    </section>
+
+    <div id="game-content" class="hidden flex flex-col items-center gap-4 w-full">
+      <div id="game-area" class="flex flex-col md:flex-row items-center justify-center gap-4">
+        <div class="board-wrap">
+          <div id="board" class="board" aria-label="Tetris board"></div>
+          <div id="overlay" class="overlay hidden">
+            <p id="overlay-title" class="overlay-title"></p>
+            <button id="overlay-restart" class="overlay-btn hidden" type="button">Play Again</button>
+            <button id="overlay-difficulty" class="overlay-btn overlay-btn-ghost hidden" type="button">Change Difficulty</button>
+          </div>
         </div>
-        <div class="stat">
-          <p class="stat-label">Score</p>
-          <p id="score" class="stat-value">0</p>
-        </div>
-        <div class="stat">
-          <p class="stat-label">Lines</p>
-          <p id="lines" class="stat-value">0</p>
-        </div>
-        <div class="stat">
+
+        <aside class="panel">
+          <div class="stat">
+            <p class="stat-label">Next</p>
+            <div id="next-preview" class="next-grid" aria-label="Next piece preview"></div>
+          </div>
+          <div class="stat">
+            <p class="stat-label">Score</p>
+            <p id="score" class="stat-value">0</p>
+          </div>
+          <div class="stat">
+            <p class="stat-label">Lines</p>
+            <p id="lines" class="stat-value">0</p>
+          </div>
+<div class="stat">
           <p class="stat-label">Level</p>
           <p id="level" class="stat-value">1</p>
         </div>
-        <div class="flex flex-row md:flex-col gap-2">
-          <button id="pause-btn" class="btn" type="button">Pause</button>
-          <button id="restart-btn" class="btn btn-accent" type="button">Restart</button>
+        <div class="stat">
+          <p class="stat-label">Difficulty</p>
+          <p id="difficulty-badge" class="stat-value difficulty-badge">Normal</p>
         </div>
-      </aside>
-    </div>
+        <div class="flex flex-row md:flex-col gap-2">
+            <button id="pause-btn" class="btn" type="button">Pause</button>
+            <button id="restart-btn" class="btn btn-accent" type="button">Restart</button>
+          </div>
+        </aside>
+      </div>
 
-    <div class="touch-controls" aria-label="Touch controls">
+      <div class="touch-controls" aria-label="Touch controls">
       <div class="touch-row">
         <button class="touch-btn" data-action="move-left" type="button" aria-label="Move left">&#9664;</button>
         <button class="touch-btn touch-btn-wide" data-action="move-down" type="button" aria-label="Move down">&#9660;</button>
@@ -62,6 +100,7 @@
       <span class="hidden sm:inline">&#8592; &#8594; move &nbsp;&middot;&nbsp; &#8595; soft drop &nbsp;&middot;&nbsp; &#8593; rotate &nbsp;&middot;&nbsp; Space hard drop &nbsp;&middot;&nbsp; P pause &nbsp;&middot;&nbsp; R restart</span>
       <span class="sm:hidden">Use the on-screen buttons to control the piece</span>
     </p>
+    </div>
   </main>
 </body>
 </html>

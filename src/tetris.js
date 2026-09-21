@@ -4,9 +4,37 @@
   const COLS = 10;
   const ROWS = 20;
   const LINE_SCORES = [0, 100, 300, 500, 800];
-  const BASE_SPEED = 800;
-  const SPEED_STEP = 70;
-  const MIN_SPEED = 100;
+
+  const DIFFICULTY_CONFIG = {
+    easy: {
+      label: 'Easy',
+      baseSpeed: 1100,
+      speedStep: 55,
+      minSpeed: 160,
+      linesPerLevel: 12
+    },
+    normal: {
+      label: 'Normal',
+      baseSpeed: 800,
+      speedStep: 70,
+      minSpeed: 100,
+      linesPerLevel: 10
+    },
+    hard: {
+      label: 'Hard',
+      baseSpeed: 540,
+      speedStep: 80,
+      minSpeed: 60,
+      linesPerLevel: 8
+    }
+  };
+
+  function normalizeDifficulty(value) {
+    if (window.GameDifficulty) {
+      return window.GameDifficulty.normalize(value, 'normal');
+    }
+    return DIFFICULTY_CONFIG[value] ? value : 'normal';
+  }
 
   const PIECE_ORDER = ['I', 'O', 'T', 'S', 'Z', 'J', 'L'];
 
@@ -48,12 +76,16 @@
   const overlayEl = document.getElementById('overlay');
   const overlayTitleEl = document.getElementById('overlay-title');
   const overlayRestartBtn = document.getElementById('overlay-restart');
+  const overlayDifficultyBtn = document.getElementById('overlay-difficulty');
   const nextPreviewEl = document.getElementById('next-preview');
   const scoreEl = document.getElementById('score');
   const linesEl = document.getElementById('lines');
   const levelEl = document.getElementById('level');
   const pauseBtn = document.getElementById('pause-btn');
   const restartBtn = document.getElementById('restart-btn');
+  const difficultyScreenEl = document.getElementById('difficulty-screen');
+  const gameContentEl = document.getElementById('game-content');
+  const difficultyBadgeEl = document.getElementById('difficulty-badge');
 
   const boardCells = [];
   for (let i = 0; i < ROWS * COLS; i++) {
@@ -79,12 +111,16 @@
     score: 0,
     lines: 0,
     level: 1,
-    status: 'ready',
+    status: 'idle',
+    difficulty: null,
+    cfg: DIFFICULTY_CONFIG.normal,
     timer: null,
     clearing: false,
     clearTimer: null,
     session: 0
   };
+
+  let difficultyController = null;
 
   let prevClasses = null;
 
@@ -169,7 +205,7 @@
         const count = fullRows.length;
         state.score += LINE_SCORES[count] * state.level;
         state.lines += count;
-        const newLevel = Math.floor(state.lines / 10) + 1;
+        const newLevel = Math.floor(state.lines / state.cfg.linesPerLevel) + 1;
         if (newLevel !== state.level) {
           state.level = newLevel;
         }
@@ -351,7 +387,8 @@
   }
 
   function speedForLevel() {
-    return Math.max(MIN_SPEED, BASE_SPEED - (state.level - 1) * SPEED_STEP);
+    const cfg = state.cfg;
+    return Math.max(cfg.minSpeed, cfg.baseSpeed - (state.level - 1) * cfg.speedStep);
   }
 
   function startLoop() {
@@ -385,6 +422,7 @@
     overlayEl.classList.remove('paused');
     overlayTitleEl.textContent = 'GAME OVER';
     overlayRestartBtn.classList.remove('hidden');
+    overlayDifficultyBtn.classList.remove('hidden');
     render();
   }
 
@@ -394,6 +432,7 @@
     overlayEl.classList.add('paused');
     overlayTitleEl.textContent = 'PAUSED';
     overlayRestartBtn.classList.add('hidden');
+    overlayDifficultyBtn.classList.add('hidden');
   }
 
   function togglePause() {
@@ -415,6 +454,10 @@
       clearTimeout(state.clearTimer);
       state.clearTimer = null;
     }
+    if (state.difficulty === null) {
+      state.difficulty = 'normal';
+      state.cfg = DIFFICULTY_CONFIG.normal;
+    }
     state.session++;
     state.board = createBoard();
     state.bag = [];
@@ -429,9 +472,75 @@
     overlayEl.classList.add('hidden');
     overlayEl.classList.remove('paused');
     updateHud();
+    updateDifficultyBadge();
     spawnPiece();
     render();
     startLoop();
+  }
+
+  function updateDifficultyBadge() {
+    if (difficultyBadgeEl && state.cfg) {
+      difficultyBadgeEl.textContent = state.cfg.label;
+    }
+  }
+
+  function startGame(difficulty) {
+    state.difficulty = normalizeDifficulty(difficulty);
+    state.cfg = DIFFICULTY_CONFIG[state.difficulty];
+    if (difficultyScreenEl) difficultyScreenEl.style.display = 'none';
+    if (gameContentEl) {
+      gameContentEl.classList.remove('hidden');
+      gameContentEl.style.display = 'flex';
+    }
+    restart();
+  }
+
+  function returnToDifficulty() {
+    stopLoop();
+    if (state.clearTimer !== null) {
+      clearTimeout(state.clearTimer);
+      state.clearTimer = null;
+    }
+    state.session++;
+    state.status = 'idle';
+    overlayEl.style.display = 'none';
+    overlayEl.classList.add('hidden');
+    overlayEl.classList.remove('paused');
+    if (gameContentEl) {
+      gameContentEl.classList.add('hidden');
+      gameContentEl.style.display = 'none';
+    }
+    if (difficultyScreenEl) {
+      difficultyScreenEl.style.display = '';
+      if (difficultyController && state.difficulty) {
+        difficultyController.select(state.difficulty);
+      }
+    }
+  }
+
+  function initDifficulty() {
+    state.board = createBoard();
+    render();
+    if (!difficultyScreenEl) {
+      startGame('normal');
+      return;
+    }
+    gameContentEl.style.display = 'none';
+    difficultyScreenEl.style.display = '';
+    if (!window.GameDifficulty) {
+      startGame('normal');
+      return;
+    }
+    difficultyController = window.GameDifficulty.create(difficultyScreenEl, {
+      onStart: function (difficulty) {
+        startGame(difficulty);
+      },
+      onCancel: function () {
+        if (window.history && window.history.length > 1) {
+          window.history.back();
+        }
+      }
+    });
   }
 
   function onKeydown(e) {
@@ -439,6 +548,7 @@
     if (code === 'Space' || code.indexOf('Arrow') === 0) {
       e.preventDefault();
     }
+    if (state.status === 'idle') return;
     if (code === 'KeyP') {
       togglePause();
       return;
@@ -490,6 +600,12 @@
     pauseBtn.textContent = 'Pause';
   });
 
+  overlayDifficultyBtn.addEventListener('click', function () {
+    blurButton(overlayDifficultyBtn);
+    returnToDifficulty();
+    pauseBtn.textContent = 'Pause';
+  });
+
   document.addEventListener('keydown', onKeydown);
 
   const touchActions = {
@@ -538,9 +654,12 @@
         clearing: state.clearing,
         board: state.board,
         current: state.current,
-        nextType: state.nextType
+        nextType: state.nextType,
+        difficulty: state.difficulty
       };
     },
+    startGame: startGame,
+    returnToDifficulty: returnToDifficulty,
     restart: restart,
     tick: tick,
     moveLeft: function () { return moveHorizontal(-1); },
@@ -566,5 +685,5 @@
     }
   };
 
-  restart();
+  initDifficulty();
 })();
