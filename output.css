@@ -9,8 +9,11 @@
     --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
       "Courier New", monospace;
     --color-cyan-300: oklch(86.5% 0.127 207.078);
+    --color-cyan-700: oklch(52% 0.105 223.128);
     --color-slate-100: oklch(96.8% 0.007 247.896);
+    --color-slate-200: oklch(92.9% 0.013 255.508);
     --color-slate-500: oklch(55.4% 0.046 257.417);
+    --color-slate-900: oklch(20.8% 0.042 265.755);
     --color-slate-950: oklch(12.9% 0.042 264.695);
     --spacing: 0.25rem;
     --text-xs: 0.75rem;
@@ -19,7 +22,6 @@
     --text-3xl--line-height: calc(2.25 / 1.875);
     --text-4xl: 2.25rem;
     --text-4xl--line-height: calc(2.5 / 2.25);
-    --font-weight-bold: 700;
     --font-weight-extrabold: 800;
     --leading-relaxed: 1.625;
     --default-font-family: var(--font-sans);
@@ -211,8 +213,8 @@
   .overflow-x-hidden {
     overflow-x: hidden;
   }
-  .bg-slate-950 {
-    background-color: var(--color-slate-950);
+  .bg-slate-100 {
+    background-color: var(--color-slate-100);
   }
   .px-3 {
     padding-inline: calc(var(--spacing) * 3);
@@ -246,14 +248,14 @@
     --tw-tracking: 0.3em;
     letter-spacing: 0.3em;
   }
-  .text-cyan-300 {
-    color: var(--color-cyan-300);
-  }
-  .text-slate-100 {
-    color: var(--color-slate-100);
+  .text-cyan-700 {
+    color: var(--color-cyan-700);
   }
   .text-slate-500 {
     color: var(--color-slate-500);
+  }
+  .text-slate-900 {
+    color: var(--color-slate-900);
   }
   .blur {
     --tw-blur: blur(8px);
